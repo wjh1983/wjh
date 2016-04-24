@@ -1,0 +1,69 @@
+
+
+第一种解决方案
+mysql> select * from test;
++----------+------+
+| gcid     | a    |
++----------+------+
+| gic11111 |  111 |
+| gic11111 |  111 |
+| gic11111 |  111 |
+| gic11112 |  111 |
+| gic11112 |  111 |
+| gic11112 |  111 |
+| gic11113 |  111 |
+| gic11113 |  111 |
+| gic11113 |  111 |
++----------+------+
+9 rows in set (0.01 sec)
+
+mysql> select distinct gcid,a from test;
++----------+------+
+| gcid     | a    |
++----------+------+
+| gic11111 |  111 |
+| gic11112 |  111 |
+| gic11113 |  111 |
++----------+------+
+3 rows in set (0.00 sec)
+
+mysql> create table b as select distinct gcid,a from test;
+Query OK, 3 rows affected (0.11 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> select * from b;
++----------+------+
+| gcid     | a    |
++----------+------+
+| gic11111 |  111 |
+| gic11112 |  111 |
+| gic11113 |  111 |
++----------+------+
+3 rows in set (0.00 sec)
+
+
+第二种解决方案
+#####################################################
+mysql> select * from t_user; 
++----+----------+------+ 
+| id | username | age | 
++----+----------+------+ 
+| 1 | aaa      |   20 | 
+| 2 | aaa      |   20 | 
+| 3 | bbb      |   20 | 
+| 4 | bbb      |   20 | 
+| 5 | ccc      |   20 | 
+| 6 | ccc      |   20 | 
+| 7 | ddd      |   20 | 
+| 8 | ddd      |   20 | 
++----+----------+------+
+mysql> delete t_user from t_user , (select id from t_user group by username having count(*)>1 ) as t2 where t_user.id=t2.id; 
+mysql> select * from t_user; 
++----+----------+------+ 
+| id | username | age | 
++----+----------+------+ 
+| 2 | aaa      |   20 | 
+| 4 | bbb      |   20 | 
+| 6 | ccc      |   20 | 
+| 8 | ddd      |   20 | 
++----+----------+------+
